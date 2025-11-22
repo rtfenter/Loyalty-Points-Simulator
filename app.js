@@ -8,6 +8,19 @@ const fxRates = {
   JP: 0.007   // JPY → USD
 };
 
+// Formatting helpers
+function formatNumber(value) {
+  return Number.isInteger(value) ? value.toString() : value.toFixed(2);
+}
+
+function formatPercent(value) {
+  return `${formatNumber(value)}%`;
+}
+
+function formatCurrency(value) {
+  return `$${value.toFixed(2)}`;
+}
+
 // Tier multipliers (applied on top of earn rate)
 const tierMultipliers = {
   Silver: 1.0,
@@ -46,8 +59,8 @@ document.getElementById("calculateBtn").addEventListener("click", () => {
   document.getElementById("result").innerText =
     `Region: ${region} (FX: ${fx})\n` +
     `Tier: ${tier} (Multiplier: ${tierMultiplier}x)\n` +
-    `Effective Earn Rate: ${effectiveRate.toFixed(2)}%\n` +
-    `Converted Amount (USD): ${convertedAmount.toFixed(2)}\n` +
-    `Points Earned: ${points.toFixed(2)}\n` +
-    `Estimated Redemption Value (USD): ${redemptionValue.toFixed(2)}`;
+    `Effective Earn Rate: ${formatPercent(effectiveRate)}\n` +
+    `Converted Amount (USD): ${formatCurrency(convertedAmount)}\n` +
+    `Points Earned: ${formatNumber(points)}\n` +
+    `Estimated Redemption Value (USD): ${formatCurrency(redemptionValue)}`;
 });
