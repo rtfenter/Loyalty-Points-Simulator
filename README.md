@@ -25,7 +25,7 @@ The first version includes:
 - Display of redemption value  
 - Simple event flow: `Earn → Convert → Redeem`
 
-## 🖼️ Demo
+## 🖼️ Demo Screenshot
 Here’s a quick look at the Loyalty Points Simulator in action:
 
 
