@@ -17,44 +17,32 @@
         <option value="JP">Japan (JPY)</option>
       </select>
 
-      <body>
-  <h1>Loyalty Points Simulator</h1>
+      <br><br>
 
-  <div>
-    <label>Region:</label>
-    <select id="region">
-      <option value="US" selected>United States (USD)</option>
-      <option value="EU">Europe (EUR)</option>
-      <option value="UK">United Kingdom (GBP)</option>
-      <option value="JP">Japan (JPY)</option>
-    </select>
+      <label>Tier:</label>
+      <select id="tier">
+        <option value="Silver" selected>Silver (1x)</option>
+        <option value="Gold">Gold (1.25x)</option>
+        <option value="Platinum">Platinum (1.5x)</option>
+      </select>
 
-    <br><br>
+      <br><br>
 
-    <label>Tier:</label>
-    <select id="tier">
-      <option value="Silver" selected>Silver (1x)</option>
-      <option value="Gold">Gold (1.25x)</option>
-      <option value="Platinum">Platinum (1.5x)</option>
-    </select>
+      <label>Transaction Amount ($):</label>
+      <input id="amount" type="number" />
 
-    <br><br>
+      <br><br>
 
-    <label>Transaction Amount ($):</label>
-    <input id="amount" type="number" />
+      <label>Earn Rate (%):</label>
+      <input id="rate" type="number" value="5" />
 
-    <br><br>
+      <br><br>
 
-    <label>Earn Rate (%):</label>
-    <input id="rate" type="number" value="5" />
+      <button id="calculateBtn">Calculate Points</button>
 
-    <br><br>
+      <h2 id="result"></h2>
+    </div>
 
-    <button id="calculateBtn">Calculate Points</button>
-
-    <h2 id="result"></h2>
-  </div>
-
-  <script src="./app.js"></script>
-</body>
+    <script src="./app.js"></script>
+  </body>
 </html>
