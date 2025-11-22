@@ -1,4 +1,5 @@
-# Loyalty Points Simulator  
+# Loyalty Points Simulator 
+[![Live Demo](https://img.shields.io/badge/Live%20Demo-000000?style=for-the-badge&logo=github&logoColor=white)](https://rtfenter.github.io/loyalty-points-simulator/)
 ### A tiny tool to model points earning, FX conversion, and redemption value across regions.
 
 This project is part of my **Loyalty Systems Series**, exploring how loyalty systems behave beneath the UI layer — from event flow to FX reconciliation to partner tiering.
