@@ -24,6 +24,12 @@ The first version includes:
 - Display of redemption value  
 - Simple event flow: `Earn → Convert → Redeem`
 
+## 🖼️ Demo
+Here’s a quick look at the Loyalty Points Simulator in action:
+
+
+<img width="837" height="734" alt="Screenshot 2025-11-22 at 2 43 39 PM" src="https://github.com/user-attachments/assets/cd30d69c-461d-4595-81fa-2389aeedc1df" />
+
 ---
 
 ## 🔄 Points Event Flow Diagram
