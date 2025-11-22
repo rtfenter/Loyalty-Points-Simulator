@@ -15,6 +15,9 @@ const tierMultipliers = {
   Platinum: 1.5
 };
 
+// Assumed point value in USD
+const POINT_VALUE_USD = 0.01;
+
 document.getElementById("calculateBtn").addEventListener("click", () => {
   const region = document.getElementById("region").value;
   const tier = document.getElementById("tier").value;
@@ -37,10 +40,14 @@ document.getElementById("calculateBtn").addEventListener("click", () => {
   // Calculate points using converted amount + effective earn rate
   const points = convertedAmount * (effectiveRate / 100);
 
+  // Redemption value based on point value
+  const redemptionValue = points * POINT_VALUE_USD;
+
   document.getElementById("result").innerText =
     `Region: ${region} (FX: ${fx})\n` +
     `Tier: ${tier} (Multiplier: ${tierMultiplier}x)\n` +
     `Effective Earn Rate: ${effectiveRate.toFixed(2)}%\n` +
     `Converted Amount (USD): ${convertedAmount.toFixed(2)}\n` +
-    `Points Earned: ${points.toFixed(2)}`;
+    `Points Earned: ${points.toFixed(2)}\n` +
+    `Estimated Redemption Value (USD): ${redemptionValue.toFixed(2)}`;
 });
