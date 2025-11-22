@@ -8,8 +8,16 @@ const fxRates = {
   JP: 0.007   // JPY → USD
 };
 
+// Tier multipliers (applied on top of earn rate)
+const tierMultipliers = {
+  Silver: 1.0,
+  Gold: 1.25,
+  Platinum: 1.5
+};
+
 document.getElementById("calculateBtn").addEventListener("click", () => {
   const region = document.getElementById("region").value;
+  const tier = document.getElementById("tier").value;
   const amount = Number(document.getElementById("amount").value);
   const rate = Number(document.getElementById("rate").value);
 
@@ -18,15 +26,21 @@ document.getElementById("calculateBtn").addEventListener("click", () => {
     return;
   }
 
-  // Convert the amount to USD based on region
+  // FX conversion
   const fx = fxRates[region];
   const convertedAmount = amount * fx;
 
-  // Calculate points using converted amount
-  const points = convertedAmount * (rate / 100);
+  // Apply tier multiplier to earn rate
+  const tierMultiplier = tierMultipliers[tier] || 1;
+  const effectiveRate = rate * tierMultiplier;
+
+  // Calculate points using converted amount + effective earn rate
+  const points = convertedAmount * (effectiveRate / 100);
 
   document.getElementById("result").innerText =
     `Region: ${region} (FX: ${fx})\n` +
+    `Tier: ${tier} (Multiplier: ${tierMultiplier}x)\n` +
+    `Effective Earn Rate: ${effectiveRate.toFixed(2)}%\n` +
     `Converted Amount (USD): ${convertedAmount.toFixed(2)}\n` +
     `Points Earned: ${points.toFixed(2)}`;
 });
