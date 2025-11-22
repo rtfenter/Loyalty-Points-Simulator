@@ -105,3 +105,15 @@ https://github.com/rtfenter/loyalty-series
 MVP implemented and active.  
 This simulator is intentionally lightweight. It focuses only on the core mechanics required to demonstrate loyalty system behavior, not on building a full production engine.
 
+---
+
+## ▶️ Local Use
+No installation required.  
+If you'd like to run the simulator locally:
+
+1. Clone the repo  
+2. Open `index.html` in your browser  
+
+That's it — everything runs client-side.
+
+
