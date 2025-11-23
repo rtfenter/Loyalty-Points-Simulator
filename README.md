@@ -94,7 +94,7 @@ This tool is a legible micro-version of how reward systems work under the hood.
 
 ---
 
-## 🔗 Part of the Loyalty Systems Series
+## Part of the Loyalty Systems Series
 
 Main repo:  
 https://github.com/rtfenter/loyalty-series
