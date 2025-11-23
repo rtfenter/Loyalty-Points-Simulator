@@ -1,357 +1,145 @@
-:root {
-  --bg: #0b0c0f;
-  --bg-elevated: #151821;
-  --border-subtle: #2b2f3b;
-  --accent: #f4a7b9;
-  --accent-soft: rgba(244, 167, 185, 0.18);
-  --text-main: #f8f9fb;
-  --text-muted: #a5adbf;
-  --danger: #ff6b81;
-  --danger-soft: rgba(255, 107, 129, 0.12);
-  --success: #32d296;
-  --success-soft: rgba(50, 210, 150, 0.12);
-  --radius-lg: 18px;
-  --radius-md: 10px;
-  --shadow-soft: 0 18px 45px rgba(0, 0, 0, 0.55);
-  --font-sans: system-ui, -apple-system, BlinkMacSystemFont, "SF Pro Text",
-    "Segoe UI", sans-serif;
-  --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono",
-    "Courier New", monospace;
-}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Loyalty Points Simulator</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <header class="page-header">
+    <div class="page-header-inner">
+      <h1>Loyalty Points Simulator</h1>
+      <p class="tagline">
+        Model how region, FX, and tier affect points earning and redemption value.
+      </p>
+    </div>
+  </header>
 
-*,
-*::before,
-*::after {
-  box-sizing: border-box;
-}
+  <main class="main">
+    <!-- LEFT: INPUT PANEL -->
+    <section class="panel panel-input">
+      <div class="panel-header">
+        <h2>Inputs</h2>
+        <div class="panel-actions">
+          <button id="load-example" class="btn btn-secondary">Load Example Scenario</button>
+        </div>
+      </div>
 
-html,
-body {
-  margin: 0;
-  padding: 0;
-  height: 100%;
-}
+      <p class="help-text">
+        Choose a region, tier, and earn rate. Enter a transaction amount, then click
+        <strong>Calculate Points</strong>.
+      </p>
 
-body {
-  font-family: var(--font-sans);
-  background: radial-gradient(circle at top, #171b26 0, #05060a 48%, #05060a 100%);
-  color: var(--text-main);
-}
+      <div class="field">
+        <label for="region">Region</label>
+        <select id="region" class="select">
+          <option value="US" selected>United States (USD)</option>
+          <option value="EU">Europe (EUR)</option>
+          <option value="UK">United Kingdom (GBP)</option>
+          <option value="JP">Japan (JPY)</option>
+        </select>
+      </div>
 
-/* Layout */
+      <div class="field">
+        <label for="tier">Tier</label>
+        <select id="tier" class="select">
+          <option value="Silver" selected>Silver (1.0x)</option>
+          <option value="Gold">Gold (1.25x)</option>
+          <option value="Platinum">Platinum (1.5x)</option>
+        </select>
+      </div>
 
-.page-header {
-  padding: 32px 24px 12px;
-}
+      <div class="field">
+        <label for="amount">Transaction Amount (local currency)</label>
+        <input id="amount" type="number" min="0" step="0.01" placeholder="100.00" />
+      </div>
 
-.page-header-inner {
-  max-width: 1100px;
-  margin: 0 auto;
-}
+      <div class="field">
+        <label for="rate">Base Earn Rate (%)</label>
+        <input id="rate" type="number" min="0" step="0.1" value="5" />
+      </div>
 
-.page-header h1 {
-  margin: 0 0 8px;
-  font-size: 28px;
-  letter-spacing: 0.02em;
-}
+      <div class="panel-footer">
+        <button id="calculateBtn" class="btn btn-primary">Calculate Points</button>
+        <span id="calc-status" class="parse-status" aria-live="polite"></span>
+      </div>
+    </section>
 
-.tagline {
-  margin: 0;
-  color: var(--text-muted);
-  font-size: 15px;
-}
+    <!-- RIGHT: SUMMARY PANEL -->
+    <section class="panel panel-results">
+      <div class="panel-header">
+        <h2>Points Summary</h2>
+      </div>
 
-.main {
-  max-width: 1100px;
-  margin: 0 auto 32px;
-  padding: 0 24px 24px;
-  display: grid;
-  grid-template-columns: minmax(0, 1.1fr) minmax(0, 1.4fr);
-  gap: 20px;
-}
+      <div id="summary" class="summary">
+        <div class="summary-badge summary-badge-idle">
+          No calculation yet.
+        </div>
+      </div>
 
-.page-footer {
-  border-top: 1px solid var(--border-subtle);
-  padding: 12px 24px 22px;
-  text-align: center;
-  color: var(--text-muted);
-  font-size: 13px;
-}
+      <div class="points-grid">
+        <div class="points-card">
+          <h3>FX &amp; Normalization</h3>
+          <p id="fx-line" class="points-line muted">
+            Choose a region and amount to see how spend is normalized to USD.
+          </p>
+        </div>
 
-.page-footer a {
-  color: var(--accent);
-  text-decoration: none;
-}
+        <div class="points-card">
+          <h3>Tier &amp; Earn Rate</h3>
+          <p id="tier-line" class="points-line muted">
+            Tier multipliers stack on top of the base earn rate.
+          </p>
+        </div>
 
-.page-footer a:hover {
-  text-decoration: underline;
-}
+        <div class="points-card">
+          <h3>Points &amp; Liability</h3>
+          <p id="points-line" class="points-line muted">
+            Points earned represent a future redemption liability for the program.
+          </p>
+        </div>
+      </div>
 
-/* Panels */
+      <div class="flow-diagram">
+        <h3>Points Event Flow</h3>
+        <pre>
+[Purchase Amount + Region + Tier]
+                |
+                v
+        FX Conversion Layer
+      (normalize to USD value)
+                |
+                v
+        Tier &amp; Earn-Rate Engine
+     (apply % earn + multipliers)
+                |
+                v
+          Points Calculation
+    (points = normalized_amount * rate)
+                |
+                v
+     Redemption Value Estimation
+(points * point_value_in_usd = liability)
+        </pre>
+      </div>
 
-.panel {
-  background: linear-gradient(135deg, rgba(20, 24, 35, 0.98), rgba(8, 10, 16, 0.98));
-  border-radius: var(--radius-lg);
-  border: 1px solid var(--border-subtle);
-  box-shadow: var(--shadow-soft);
-  padding: 18px 18px 16px;
-}
+      <div class="raw-output">
+        <h3>Detailed Calculation</h3>
+        <pre id="raw-output">No calculation yet.</pre>
+      </div>
+    </section>
+  </main>
 
-.panel-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 12px;
-  margin-bottom: 10px;
-}
+  <footer class="page-footer">
+    <p>
+      Part of the
+      <a href="https://github.com/rtfenter/loyalty-series" target="_blank" rel="noreferrer">
+        Loyalty Systems Series
+      </a>.
+    </p>
+  </footer>
 
-.panel-header h2 {
-  margin: 0;
-  font-size: 18px;
-}
-
-.panel-actions {
-  display: flex;
-  gap: 8px;
-}
-
-.panel-footer {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 10px;
-  margin-top: 16px;
-}
-
-/* Text */
-
-.help-text {
-  margin: 0 0 12px;
-  font-size: 13px;
-  color: var(--text-muted);
-}
-
-/* Fields */
-
-.field {
-  margin-bottom: 12px;
-}
-
-.field label {
-  display: block;
-  font-size: 13px;
-  color: var(--text-main);
-  margin-bottom: 4px;
-}
-
-.input,
-.select {
-  width: 100%;
-  border-radius: var(--radius-md);
-  border: 1px solid var(--border-subtle);
-  background: #05060b;
-  color: var(--text-main);
-  font-size: 13px;
-  padding: 8px 10px;
-  outline: none;
-  box-sizing: border-box;
-}
-
-input[type="number"] {
-  width: 100%;
-  border-radius: var(--radius-md);
-  border: 1px solid var(--border-subtle);
-  background: #05060b;
-  color: var(--text-main);
-  font-size: 13px;
-  padding: 8px 10px;
-  outline: none;
-  box-sizing: border-box;
-}
-
-input[type="number"]:focus,
-.select:focus {
-  border-color: var(--accent);
-  box-shadow: 0 0 0 1px var(--accent-soft);
-}
-
-/* Buttons */
-
-.btn {
-  border-radius: 999px;
-  border: none;
-  padding: 7px 14px;
-  font-size: 13px;
-  font-weight: 500;
-  cursor: pointer;
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  transition: transform 0.06s ease, box-shadow 0.06s ease, background 0.08s ease;
-}
-
-.btn-primary {
-  background: var(--accent);
-  color: #130c12;
-  box-shadow: 0 8px 20px rgba(244, 167, 185, 0.38);
-}
-
-.btn-primary:hover {
-  transform: translateY(-1px);
-  box-shadow: 0 10px 26px rgba(244, 167, 185, 0.52);
-}
-
-.btn-secondary {
-  background: rgba(34, 39, 54, 0.9);
-  color: var(--text-main);
-  border: 1px solid var(--border-subtle);
-}
-
-.btn-secondary:hover {
-  background: rgba(43, 49, 66, 0.95);
-}
-
-/* Status */
-
-.parse-status {
-  font-size: 12px;
-  color: var(--text-muted);
-}
-
-/* Summary */
-
-.summary {
-  margin-bottom: 14px;
-}
-
-.summary-badge {
-  border-radius: 999px;
-  padding: 6px 10px;
-  font-size: 13px;
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-}
-
-.summary-badge-idle {
-  background: rgba(26, 30, 42, 0.9);
-  color: var(--text-muted);
-}
-
-.summary-badge-ok {
-  background: var(--success-soft);
-  color: var(--success);
-}
-
-.summary-badge-fail {
-  background: var(--danger-soft);
-  color: var(--danger);
-}
-
-.summary-badge .count {
-  font-weight: 600;
-}
-
-/* Points grid */
-
-.points-grid {
-  display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 10px;
-  margin-bottom: 14px;
-}
-
-.points-card {
-  border-radius: var(--radius-md);
-  background: rgba(7, 10, 18, 0.96);
-  border: 1px solid rgba(41, 45, 60, 0.96);
-  padding: 10px 11px;
-  font-size: 12px;
-}
-
-.points-card h3 {
-  margin: 0 0 4px;
-  font-size: 13px;
-}
-
-.points-line {
-  margin: 0;
-  color: var(--text-muted);
-}
-
-.points-line strong {
-  color: var(--text-main);
-}
-
-.points-line.muted {
-  opacity: 0.9;
-}
-
-/* Flow diagram */
-
-.flow-diagram h3 {
-  margin: 0 0 4px;
-  font-size: 13px;
-  color: var(--text-muted);
-}
-
-.flow-diagram pre {
-  margin: 0 0 12px;
-  border-radius: var(--radius-md);
-  background: #05060b;
-  border: 1px solid var(--border-subtle);
-  padding: 8px 10px;
-  font-size: 11px;
-  font-family: var(--font-mono);
-  color: var(--text-muted);
-  white-space: pre;
-}
-
-/* Raw output */
-
-.raw-output h3 {
-  margin: 0 0 4px;
-  font-size: 13px;
-  color: var(--text-muted);
-}
-
-.raw-output pre {
-  margin: 0;
-  border-radius: var(--radius-md);
-  background: #05060b;
-  border: 1px solid var(--border-subtle);
-  padding: 8px 10px;
-  font-size: 12px;
-  font-family: var(--font-mono);
-  max-height: 220px;
-  overflow: auto;
-  color: var(--text-muted);
-}
-
-/* Responsive */
-
-@media (max-width: 900px) {
-  .main {
-    grid-template-columns: minmax(0, 1fr);
-  }
-
-  .panel {
-    padding: 16px 14px 14px;
-  }
-
-  .points-grid {
-    grid-template-columns: minmax(0, 1fr);
-  }
-}
-
-@media (max-width: 640px) {
-  .panel-footer {
-    flex-direction: column;
-    align-items: flex-start;
-  }
-
-  .panel-header {
-    flex-direction: column;
-    align-items: flex-start;
-  }
-}
+  <script src="app.js"></script>
+</body>
+</html>
