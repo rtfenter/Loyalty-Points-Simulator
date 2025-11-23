@@ -27,7 +27,8 @@ The first version includes:
 - Simple event flow: `Earn → Convert → Redeem`
 
 ## Demo Screenshot
-<img width="837" height="734" alt="Screenshot 2025-11-22 at 2 43 39 PM" src="https://github.com/user-attachments/assets/d922025d-5151-4633-b4d3-ac341ee9a01b" />
+<img width="2696" height="1908" alt="Screenshot 2025-11-23 at 08-34-15 Loyalty Points Simulator" src="https://github.com/user-attachments/assets/962b83df-379c-45c1-b071-1b2dde4f0558" />
+
 
 
 ---
